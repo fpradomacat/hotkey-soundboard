@@ -25,7 +25,7 @@ A browser soundboard ("botonera") of short Spanish-language (Argentine) audio cl
 npm ci                 # install (use the lockfile)
 npm start              # ng serve -> http://localhost:4200
 npm run build          # production build into dist/sound-effects-library
-npm test               # Karma (needs Chrome)
+npm test               # Karma (needs Chrome). Headless: run with a karma config using ChromeHeadless --no-sandbox
 npm run deploy         # LEGACY manual deploy: builds into docs/ with base-href /sound-effects-library/
 ```
 
@@ -70,26 +70,31 @@ docs/                         BUILD OUTPUT served by GitHub Pages (see Deploymen
 
 **Target:** GitHub Actions workflow `.github/workflows/deploy.yml` builds on every push to `master` and publishes with the official Pages actions. Requires repo Settings -> Pages -> Source = "GitHub Actions". Once it works, delete `docs/` and add it to `.gitignore`. The workflow derives `--base-href` from the repository name, so renaming the repo does not break the build.
 
-## Known issues (found by reading the code; NOT yet reproduced or fixed)
+## Known issues
 
-Treat as the starting backlog for the bug-fixing phase. Verify each one before fixing.
+Phase 2 (bug fixing) status. "Fixed" items were verified with a production build and unit tests, not by manual testing in a browser.
 
-1. **Missing audio file:** `sounds-database.ts` references `sabersubirybajar` ("Subí y bajá", hotkey `u`) but there is no `sabersubirybajar.mp3` in `src/assets/audio/`. The card exists and plays nothing (404).
-2. **Orphan files:** `adam_eee`, `adam_em`, `agu_ay_agustin1`, `votamos1`, `yvo_casocerrado2` exist as mp3 but no `Sound` uses them.
-3. **Hard-coded production URL** in `SoundPlayerService.playSound()`: `https://fpradomacat.github.io/sound-effects-library/assets/audio/...`. Breaks on rename, fork, custom domain or preview deploys. Should be a relative path resolved against `<base href>`.
-4. **Fragile dev path:** `Sound.source` returns `../../assets/audio/<id>.mp3`, which only works because the app lives at `/dashboard`.
-5. **Hotkey edge cases** in `DashboardComponent.handleKeyPressed`:
-   - Caps Lock on => `event.key` is uppercase and nothing matches.
-   - No `event.repeat` check: holding a key restarts the clip over and over.
-   - Alt/Meta combinations are not excluded.
-   - Ctrl hotkeys (`Ctrl+A`, `Ctrl+1`) collide with browser shortcuts (select all, switch tab) and `preventDefault()` is never called.
-   - Shift is always "stop", so uppercase/shifted keys can never be hotkeys.
-6. **Unhandled promise** from `audio.play()` (rejects if interrupted by `load()` or blocked by autoplay policy).
-7. **Probable change-detection problem:** the template calls `soundsLibraryService.searchSoundsByText(searchText)` inside a binding, which returns a new `Section` on every change-detection pass (likely `ExpressionChangedAfterItHasBeenChecked` in dev mode, and cards re-created on every cycle). Verify in the browser console.
-8. **Misleading section description:** the first section says `Fila letra "W"` but its keys start at `q` (it is the Q row).
-9. **Accessibility:** the PLAY control is a `div` with `(click)`, not a `<button>`; no focus/keyboard/aria support. Hotkeys are useless on touch devices.
-10. **Dead code / leftovers:** unused `HeaderComponent`, unused `col-*` grid CSS in `styles.scss`, `//todo rename to SoundsSection` in `Section.ts`, README is still the Angular CLI boilerplate.
-11. **Audio rights:** several clips are recordings of identifiable people and broadcast commentary. Worth a conscious decision before promoting the repo publicly.
+**Fixed in phase 2**
+- Production audio URL was hard-coded to `fpradomacat.github.io/...`; `Sound.source` is now the relative path `assets/audio/<id>.mp3`, resolved against `<base href>`.
+- Hotkeys: Caps Lock no longer breaks them (keys are lower-cased), key auto-repeat is ignored, Alt/Meta combos are ignored, and `preventDefault()` is called only when a clip was actually played (so `Ctrl+A` no longer also selects the page text).
+- `audio.play()` rejections are handled (`AbortError` ignored, others logged).
+- Search results were rebuilt on every change-detection pass; they are now built once per input change (`DashboardComponent.onSearchTextChange`).
+- First section description said row "W"; it is the Q row.
+
+**Open, waiting for a decision from the user**
+1. `sabersubirybajar` ("Subí y bajá", hotkey `u`) is in `sounds-database.ts` but `src/assets/audio/sabersubirybajar.mp3` does not exist. The card plays nothing. Needs the real file, or the entry removed.
+2. Orphan mp3 files nobody references: `adam_eee`, `adam_em`, `agu_ay_agustin1`, `votamos1`, `yvo_casocerrado2`. Add them as sounds or delete them.
+
+**Known limitations (not bugs to fix now)**
+- `Ctrl+1` cannot be intercepted: browsers reserve it for tab switching, and Chrome ignores `preventDefault()` for it.
+- Shift always means "stop", so shifted keys can never be hotkeys.
+- Component style budget warnings exist since before phase 2: `dashboard.component.scss` (2.09 kB) and `header.component.scss` (2.01 kB) exceed the 2 kB warning limit.
+
+**Backlog for phase 3 (improvements)**
+- PLAY control is a `div` with `(click)`, not a `<button>`; no keyboard focus or aria. Hotkeys are useless on touch devices.
+- Dead code: unused `HeaderComponent`, unused `col-*` grid CSS in `styles.scss`, `//todo rename to SoundsSection` in `Section.ts`, README is still the Angular CLI boilerplate.
+- Angular 13 is out of support; the upgrade is planned.
+- Audio rights: several clips are recordings of identifiable people and broadcast commentary. Worth a conscious decision before promoting the repo publicly.
 
 ## Conventions
 
@@ -97,6 +102,7 @@ Treat as the starting backlog for the bug-fixing phase. Verify each one before f
 - Follow `.editorconfig` (2 spaces). Keep `strict` TypeScript and `strictTemplates`; do not loosen them to silence errors.
 - Component per folder (`name/name.component.{ts,html,scss,spec.ts}`), generated with `ng generate component`.
 - Commits: short imperative subject ("Fix missing audio for subir y bajar"). One concern per commit.
+- Source files use Windows line endings (CRLF). Keep them: do not convert whole files to LF, or git diffs become unreadable.
 - Do not hand-edit `docs/` or `dist/`. Do not commit `node_modules`.
 - Component style budget is 2 KB warning / 4 KB error and the initial bundle is 500 KB / 1 MB (`angular.json`). Respect it.
 

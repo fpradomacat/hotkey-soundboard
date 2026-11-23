@@ -5,7 +5,8 @@
   <app-stop-button></app-stop-button>
 
   <input #searchInput
-         [(ngModel)]="searchText"
+         [ngModel]="searchText"
+         (ngModelChange)="onSearchTextChange($event)"
          (focus)="isInputTextFocused = true"
          (blur)="isInputTextFocused = false"
          name="filter"
@@ -15,11 +16,11 @@
          maxlength="20"
   >
 
-  <ng-container *ngIf="searchText; else searchResults">
-    <app-sounds-section [section]="this.soundsLibraryService.searchSoundsByText(searchText)"></app-sounds-section>
+  <ng-container *ngIf="searchResults; else allSections">
+    <app-sounds-section [section]="searchResults"></app-sounds-section>
   </ng-container>
 
-  <ng-template #searchResults>
+  <ng-template #allSections>
     <app-sounds-section *ngFor="let section of this.soundsLibraryService.soundSections"
                         [section]="section"></app-sounds-section>
   </ng-template>

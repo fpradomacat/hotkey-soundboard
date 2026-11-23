@@ -2,7 +2,7 @@ import { Section } from "./classes/Section";
 import { Sound } from "./classes/Sound";
 
 export const soundSections: Section[] = [
-  new Section('Clásicos', 'Fila letra "W"', [
+  new Section('Clásicos', 'Fila letra "Q"', [
     new Sound('gemido', 'Gemido', 'q'),
     new Sound('choro_loreventas', 'Lo reventas', 'w'),
     new Sound('choro_zapateas', 'Lo zapateas', 'e'),

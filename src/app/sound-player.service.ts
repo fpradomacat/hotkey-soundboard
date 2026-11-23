@@ -3,7 +3,6 @@ import { SoundPlayer } from "./sound-player";
 import { Sound } from "./classes/Sound";
 import { Hotkey } from "./classes/Hotkey";
 import { SoundsLibraryService } from "./sounds-library.service";
-import { environment } from "../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -16,19 +15,17 @@ export class SoundPlayerService extends SoundPlayer {
   }
 
   public playSound(sound: Sound): void {
-    if (environment.production) {
-      this.audio.src = `https://fpradomacat.github.io/sound-effects-library/assets/audio/${sound.source}`;
-    } else {
-      this.audio.src = sound.source;
-    }
+    this.audio.src = sound.source;
     this.play();
   }
 
-  public playSoundByHotkey(hotkey: Hotkey) {
+  /** Plays the sound bound to the hotkey. Returns true if there was one. */
+  public playSoundByHotkey(hotkey: Hotkey): boolean {
     const sound = this.soundsLibraryService.getSoundByHotkey(hotkey);
-    if (sound) {
-      this.playSound(sound);
-    }
+    if (!sound) return false;
+
+    this.playSound(sound);
+    return true;
   }
 
   public stopCurrentSound(): void {
@@ -37,6 +34,9 @@ export class SoundPlayerService extends SoundPlayer {
 
   private play(): void {
     this.audio.load();
-    this.audio.play();
+    this.audio.play().catch(error => {
+      // AbortError is expected when a new sound interrupts the previous one.
+      if (error?.name !== 'AbortError') console.error('Could not play sound', error);
+    });
   }
 }

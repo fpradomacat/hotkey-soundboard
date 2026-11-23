@@ -12,7 +12,7 @@ export class Sound {
               _isCtrlPressed: boolean = false) {
     this._source = _source;
     this._displayName = _displayName;
-    this._hotkey = {key: _key, isCtrlPressed: _isCtrlPressed};
+    this._hotkey = {key: _key.toLowerCase(), isCtrlPressed: _isCtrlPressed};
   }
 
   get displayName() {
@@ -20,7 +20,9 @@ export class Sound {
   }
 
   get source() {
-    return `../../assets/audio/${this._source}.mp3`;
+    // Relative on purpose: the browser resolves it against <base href>,
+    // so it works in dev ('/') and on GitHub Pages ('/<repo-name>/').
+    return `assets/audio/${this._source}.mp3`;
   }
 
   get hotkeyToString() {

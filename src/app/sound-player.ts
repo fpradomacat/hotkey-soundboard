@@ -5,7 +5,7 @@ export abstract class SoundPlayer {
 
   abstract playSound(sound: Sound): void;
 
-  abstract playSoundByHotkey(hotkey: Hotkey): void;
+  abstract playSoundByHotkey(hotkey: Hotkey): boolean;
 
   abstract stopCurrentSound(): void;
 }
