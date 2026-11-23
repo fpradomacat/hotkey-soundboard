@@ -3,8 +3,8 @@
   "description": "Los clásicos de siempre",
   "sections": [
     {
-      "name": "Clásicos",
-      "description": "Fila letra \"Q\"",
+      "name": "Viejo inimputable",
+      "description": "",
       "sounds": [
         {
           "file": "choro_loreventas",
@@ -25,7 +25,13 @@
           "file": "choro_inimputable",
           "name": "Inimputable",
           "hotkey": "t"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Varios",
+      "description": "",
+      "sounds": [
         {
           "file": "cocosily",
           "name": "Iiihhh",
@@ -41,6 +47,16 @@
           "name": "El taco no!",
           "hotkey": "a",
           "ctrl": true
+        },
+        {
+          "file": "marteeen",
+          "name": "Marteeen",
+          "hotkey": "a"
+        },
+        {
+          "file": "invente",
+          "name": "Invente!",
+          "hotkey": "s"
         }
       ]
     }

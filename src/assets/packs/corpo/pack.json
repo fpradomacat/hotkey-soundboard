@@ -1,21 +1,11 @@
 {
-  "title": "Amigos",
-  "description": "Frases de amigos y compañeros",
+  "title": "Corpo",
+  "description": "Frases de la oficina",
   "sections": [
     {
-      "name": "ESolutions",
-      "description": "Fila letra \"A\"",
+      "name": "Corpo",
+      "description": "",
       "sounds": [
-        {
-          "file": "marteeen",
-          "name": "Marteeen",
-          "hotkey": "a"
-        },
-        {
-          "file": "invente",
-          "name": "Invente!",
-          "hotkey": "s"
-        },
         {
           "file": "inventeRoman",
           "name": "Invente Román!",
@@ -50,13 +40,7 @@
           "file": "adam_chau",
           "name": "Chauchiques",
           "hotkey": "l"
-        }
-      ]
-    },
-    {
-      "name": "Biancho",
-      "description": "Fila letra \"Z\"",
-      "sounds": [
+        },
         {
           "file": "agu_anoder_birdei",
           "name": "Anoder Birdei",
