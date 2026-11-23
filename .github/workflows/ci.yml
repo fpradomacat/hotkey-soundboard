@@ -1,22 +1,19 @@
-name: Deploy to GitHub Pages
+name: CI
 
 on:
-  push:
-    branches: [master]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Only one deployment at a time; let a running deploy finish.
+# A new push to the same pull request cancels the previous run.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,29 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate sounds.json against the audio files
+        run: npm run validate:sounds
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:ci
+
       - name: Build
-        run: >
-          npx ng build
-          --configuration production
-          --output-path dist/site
-          --base-href "/${{ github.event.repository.name }}/"
-
-      # GitHub Pages has no SPA fallback: serve index.html for unknown routes.
-      - name: Add SPA fallback
-        run: cp dist/site/index.html dist/site/404.html
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        run: npm run build
