@@ -1,16 +1,14 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { Section } from "../classes/Section";
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Section } from '../classes/Section';
+import { SoundCardComponent } from '../sound-card/sound-card.component';
 
 @Component({
-    selector: 'app-sounds-section',
-    templateUrl: './sounds-section.component.html',
-    styleUrls: ['./sounds-section.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-sounds-section',
+  imports: [SoundCardComponent],
+  templateUrl: './sounds-section.component.html',
+  styleUrl: './sounds-section.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SoundsSectionComponent {
-
-  @Input()
-  section!: Section;
-
+  readonly section = input.required<Section>();
 }

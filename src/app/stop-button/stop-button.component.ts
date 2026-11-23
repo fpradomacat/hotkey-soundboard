@@ -1,32 +1,23 @@
-import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
-import { SoundPlayerService } from "../sound-player.service";
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { SoundPlayerService } from '../sound-player.service';
 
 @Component({
-    selector: 'app-stop-button',
-    templateUrl: './stop-button.component.html',
-    styleUrls: ['./stop-button.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-stop-button',
+  templateUrl: './stop-button.component.html',
+  styleUrl: './stop-button.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    // Shift is the keyboard shortcut for stop: show the button as pressed while it is held.
+    '(window:keydown.shift)': 'isStopButtonActive.set(true)',
+    '(window:keyup.shift)': 'isStopButtonActive.set(false)'
+  }
 })
 export class StopButtonComponent {
+  private readonly soundPlayerService = inject(SoundPlayerService);
 
-  isStopButtonActive = false;
+  protected readonly isStopButtonActive = signal(false);
 
-  constructor(private soundPlayerService: SoundPlayerService) {
-  }
-
-  public stopCurrentSound(): void {
+  protected stopCurrentSound(): void {
     this.soundPlayerService.stopCurrentSound();
   }
-
-  @HostListener('window:keydown.shift')
-  handleShiftKeydown() {
-    this.isStopButtonActive = true;
-  }
-
-  @HostListener('window:keyup.shift')
-  handleShiftKeyup() {
-    this.isStopButtonActive = false;
-  }
-
 }

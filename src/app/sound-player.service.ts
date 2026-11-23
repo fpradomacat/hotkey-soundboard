@@ -1,26 +1,45 @@
-import { Injectable } from '@angular/core';
-import { SoundPlayer } from "./sound-player";
-import { Sound } from "./classes/Sound";
-import { Hotkey } from "./classes/Hotkey";
-import { SoundsLibraryService } from "./sounds-library.service";
+import { inject, Injectable, signal } from '@angular/core';
+import { SoundPlayer } from './sound-player';
+import { Sound } from './classes/Sound';
+import { Hotkey } from './classes/Hotkey';
+import { SoundsLibraryService } from './sounds-library.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SoundPlayerService extends SoundPlayer {
-  private audio = new Audio();
+  private readonly soundsLibraryService = inject(SoundsLibraryService);
 
-  constructor(private soundsLibraryService: SoundsLibraryService) {
+  // A single shared element: playing a sound always cuts the previous one.
+  private readonly audio = new Audio();
+
+  private readonly _currentSound = signal<Sound | null>(null);
+
+  /** The sound that is playing right now, or null. */
+  readonly currentSound = this._currentSound.asReadonly();
+
+  constructor() {
     super();
+    const clearCurrentSound = () => this._currentSound.set(null);
+    this.audio.addEventListener('ended', clearCurrentSound);
+    this.audio.addEventListener('pause', clearCurrentSound);
+    this.audio.addEventListener('error', clearCurrentSound);
   }
 
-  public playSound(sound: Sound): void {
+  playSound(sound: Sound): void {
     this.audio.src = sound.source;
-    this.play();
+    this.audio.load();
+    this._currentSound.set(sound);
+    this.audio.play().catch(error => {
+      // AbortError is expected when a new sound interrupts the previous one.
+      if (error?.name === 'AbortError') return;
+
+      this._currentSound.set(null);
+      console.error('Could not play sound', error);
+    });
   }
 
-  /** Plays the sound bound to the hotkey. Returns true if there was one. */
-  public playSoundByHotkey(hotkey: Hotkey): boolean {
+  playSoundByHotkey(hotkey: Hotkey): boolean {
     const sound = this.soundsLibraryService.getSoundByHotkey(hotkey);
     if (!sound) return false;
 
@@ -28,15 +47,8 @@ export class SoundPlayerService extends SoundPlayer {
     return true;
   }
 
-  public stopCurrentSound(): void {
+  stopCurrentSound(): void {
     this.audio.pause();
-  }
-
-  private play(): void {
-    this.audio.load();
-    this.audio.play().catch(error => {
-      // AbortError is expected when a new sound interrupts the previous one.
-      if (error?.name !== 'AbortError') console.error('Could not play sound', error);
-    });
+    this._currentSound.set(null);
   }
 }

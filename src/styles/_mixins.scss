@@ -1,0 +1,26 @@
+// The pixel-art "button border" used by the stop button and the search box.
+// The element using it must be positioned (relative or fixed).
+@mixin clickable-box {
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: content-box;
+  }
+
+  &:before {
+    top: -6px;
+    left: 0;
+    border-top: 6px black solid;
+    border-bottom: 6px black solid;
+  }
+
+  &:after {
+    left: -6px;
+    top: 0;
+    border-left: 6px black solid;
+    border-right: 6px black solid;
+  }
+}

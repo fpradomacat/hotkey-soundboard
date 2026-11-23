@@ -1,41 +1,37 @@
-import { Section } from "./classes/Section";
-import { Sound } from "./classes/Sound";
+import { Section } from './classes/Section';
+import { Sound } from './classes/Sound';
+import soundsFile from './sounds.json';
 
-export const soundSections: Section[] = [
-  new Section('Clásicos', 'Fila letra "Q"', [
-    new Sound('gemido', 'Gemido', 'q'),
-    new Sound('choro_loreventas', 'Lo reventas', 'w'),
-    new Sound('choro_zapateas', 'Lo zapateas', 'e'),
-    new Sound('choro_granflauta', 'Gran flauta', 'r'),
-    new Sound('choro_inimputable', 'Inimputable', 't'),
-    new Sound('sabersubirybajar', 'Subí y bajá', 'u'),
-    new Sound('cocosily', 'Iiihhh', 'i'),
-    new Sound('ysihijo', 'Y si hijo!', 'p'),
-    new Sound('el-taco-no_ampli', 'El taco no!', 'a', true),
-    new Sound('relato-gol_ampli', 'Relato 3-1', '1'),
-    new Sound('river-3-boca-1_amplificado', 'River 3-1 Boca', '1', true),
-    new Sound('va-el-tercero_loop', 'Y va el tercero!', ''),
-  ]),
-  new Section('ESolutions', 'Fila letra "A"',
-    [
-      new Sound('marteeen', 'Marteeen', 'a'),
-      new Sound('invente', 'Invente!', 's'),
-      new Sound('inventeRoman', 'Invente Román!', 'd'),
-      new Sound('yvo_casocerrado', 'Caso cerrado 1!', 'f'),
-      new Sound('yvo_casocerrado1', 'Caso cerrado 2!', 'g'),
-      new Sound('yvo_hedicho', 'He dicho!', 'h'),
-      new Sound('votamos', 'Votamos?', 'j'),
-      new Sound('adam_nadama', 'Nadamá', 'k'),
-      new Sound('adam_chau', 'Chauchiques', 'l'),
-    ]),
-  new Section('Biancho', 'Fila letra "Z"', [
-    new Sound('agu_anoder_birdei', 'Anoder Birdei', 'z'),
-    new Sound('agu_friendcito', 'Friendcito1', 'x'),
-    new Sound('agu_friendcito1', 'Friendcito2', 'c'),
-    new Sound('agu_ay_agustin', 'Ayyy Agustin', 'v'),
-    new Sound('agu_vida_de_mier', 'Vida de mier', 'b'),
-    new Sound('agu_que_ganas', 'Qué ganas ..', 'n'),
-    new Sound('agu_esta_rompido', 'Está rompido', 'm'),
-    new Sound('agu_boludo', 'Boludo', ','),
-  ]),
-];
+/** Shape of `sounds.json`. The file is validated by `npm run validate:sounds`. */
+export interface SoundEntry {
+  /** File name inside `src/assets/audio`, without the `.mp3` extension. */
+  file: string;
+  /** Text shown on the card and used by the search. */
+  name: string;
+  /** Single `KeyboardEvent.key` value. Omit it for a sound without hotkey. */
+  hotkey?: string;
+  /** True when the hotkey needs Ctrl pressed. */
+  ctrl?: boolean;
+}
+
+export interface SectionEntry {
+  name: string;
+  description: string;
+  sounds: SoundEntry[];
+}
+
+export interface SoundsFile {
+  sections: SectionEntry[];
+}
+
+export function buildSections(data: SoundsFile): Section[] {
+  return data.sections.map(section =>
+    new Section(
+      section.name,
+      section.description,
+      section.sounds.map(sound => new Sound(sound.file, sound.name, sound.hotkey ?? '', sound.ctrl ?? false))
+    )
+  );
+}
+
+export const soundSections: Section[] = buildSections(soundsFile);

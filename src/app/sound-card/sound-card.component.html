@@ -1,17 +1,23 @@
-<div class="button-container">
+<div class="button-container" [class.playing]="isPlaying()">
 
-  <div class="button-icon"
-       (click)="play()">
-    <span>PLAY</span>
-  </div>
+  <button type="button"
+          class="button-icon"
+          [attr.aria-label]="'Reproducir ' + sound().displayName"
+          [attr.aria-keyshortcuts]="sound().ariaKeyShortcuts"
+          (click)="play()">
+    <span aria-hidden="true">PLAY</span>
+  </button>
 
   <div class="button-text">
-    <span [title]="sound.displayName">{{sound.displayName}}</span>
+    <span [title]="sound().displayName">{{ sound().displayName }}</span>
   </div>
 
-  <div class="shortcut"
-  [title]="'Shortcut: ' + sound.hotkeyToString">
-    <div>{{sound.hotkey.isCtrlPressed ? 'CTRL' : ''}}</div>
-    <div>{{sound.hotkey.key.toUpperCase()}}</div>
-  </div>
+  @if (sound().hasHotkey) {
+    <div class="shortcut"
+         aria-hidden="true"
+         [title]="'Shortcut: ' + sound().hotkeyToString">
+      <div>{{ sound().hotkey.isCtrlPressed ? 'CTRL' : '' }}</div>
+      <div>{{ sound().hotkey.key.toUpperCase() }}</div>
+    </div>
+  }
 </div>

@@ -1,31 +1,40 @@
-import { Component, ElementRef, HostListener, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { SoundPlayerService } from "../sound-player.service";
-import { SoundsLibraryService } from "../sounds-library.service";
-import { Hotkey } from "../classes/Hotkey";
-import { Section } from "../classes/Section";
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { SoundPlayerService } from '../sound-player.service';
+import { SoundsLibraryService } from '../sounds-library.service';
+import { Hotkey } from '../classes/Hotkey';
+import { StopButtonComponent } from '../stop-button/stop-button.component';
+import { SoundsSectionComponent } from '../sounds-section/sounds-section.component';
 
 @Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-dashboard',
+  imports: [StopButtonComponent, SoundsSectionComponent],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:keydown)': 'handleKeyPressed($event)'
+  }
 })
 export class DashboardComponent {
-  searchText: string = "";
-  searchResults?: Section;
+  protected readonly soundsLibraryService = inject(SoundsLibraryService);
+  private readonly soundPlayerService = inject(SoundPlayerService);
 
-  @ViewChild('searchInput')
-  searchInput!: ElementRef;
-  isInputTextFocused: boolean = false;
+  protected readonly searchText = signal('');
 
-  constructor(public soundsLibraryService: SoundsLibraryService,
-              private soundPlayerService: SoundPlayerService) {
+  /** Search results, or null while the search box is empty. Recomputed only when the text changes. */
+  protected readonly searchResults = computed(() => {
+    const text = this.searchText();
+    return text ? this.soundsLibraryService.searchSoundsByText(text) : null;
+  });
+
+  protected readonly currentSound = this.soundPlayerService.currentSound;
+
+  protected onSearchInput(event: Event): void {
+    this.searchText.set((event.target as HTMLInputElement).value);
   }
 
-  @HostListener('window:keydown', ['$event'])
-  handleKeyPressed(event: KeyboardEvent) {
-    if (this.isInputTextFocused || this.searchText || !event.key) return;
+  handleKeyPressed(event: KeyboardEvent): void {
+    if (this.searchText() || !event.key || isTypingTarget(event.target)) return;
 
     if (event.shiftKey) {
       this.soundPlayerService.stopCurrentSound();
@@ -42,10 +51,9 @@ export class DashboardComponent {
     // Avoid the browser's own shortcut (e.g. Ctrl+A = select all) only when we handled the key.
     if (wasPlayed) event.preventDefault();
   }
+}
 
-  onSearchTextChange(text: string): void {
-    this.searchText = text;
-    // Built once per change, not on every change-detection pass.
-    this.searchResults = text ? this.soundsLibraryService.searchSoundsByText(text) : undefined;
-  }
+function isTypingTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement &&
+    (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 }

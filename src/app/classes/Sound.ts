@@ -8,8 +8,8 @@ export class Sound {
 
   constructor(_source: string,
               _displayName: string,
-              _key: string = '',
-              _isCtrlPressed: boolean = false) {
+              _key = '',
+              _isCtrlPressed = false) {
     this._source = _source;
     this._displayName = _displayName;
     this._hotkey = {key: _key.toLowerCase(), isCtrlPressed: _isCtrlPressed};
@@ -31,6 +31,16 @@ export class Sound {
 
   get hotkey() {
     return this._hotkey;
+  }
+
+  get hasHotkey(): boolean {
+    return this._hotkey.key !== '';
+  }
+
+  /** Value for the `aria-keyshortcuts` attribute, or null when there is no hotkey. */
+  get ariaKeyShortcuts(): string | null {
+    if (!this.hasHotkey) return null;
+    return `${this._hotkey.isCtrlPressed ? 'Control+' : ''}${this._hotkey.key.toUpperCase()}`;
   }
 
   isSameHotkey(hotkey: Hotkey) {

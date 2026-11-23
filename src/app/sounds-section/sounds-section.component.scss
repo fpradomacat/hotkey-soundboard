@@ -9,6 +9,12 @@
 
   .section-header {
     margin-bottom: 0.5rem;
+
+    h2 {
+      // Same size as the h3 it replaces: the heading levels are h1 > h2 now.
+      font-size: 1.17em;
+      margin: 1em 0;
+    }
   }
   .sounds-container {
     display: grid;

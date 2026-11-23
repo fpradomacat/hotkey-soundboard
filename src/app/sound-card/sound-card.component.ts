@@ -1,24 +1,22 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { Sound } from "../classes/Sound";
-import { SoundPlayerService } from "../sound-player.service";
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Sound } from '../classes/Sound';
+import { SoundPlayerService } from '../sound-player.service';
 
 @Component({
-    selector: 'app-sound-card',
-    templateUrl: './sound-card.component.html',
-    styleUrls: ['./sound-card.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-sound-card',
+  templateUrl: './sound-card.component.html',
+  styleUrl: './sound-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SoundCardComponent {
+  readonly sound = input.required<Sound>();
 
-  @Input()
-  sound!: Sound;
+  private readonly soundPlayerService = inject(SoundPlayerService);
 
-  constructor(private soundPlayerService: SoundPlayerService) {
+  /** True while this card's sound is the one playing. */
+  protected readonly isPlaying = computed(() => this.soundPlayerService.currentSound() === this.sound());
+
+  protected play(): void {
+    this.soundPlayerService.playSound(this.sound());
   }
-
-  public play(): void {
-    this.soundPlayerService.playSound(this.sound);
-  }
-
 }

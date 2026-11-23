@@ -1,44 +1,34 @@
 import { Injectable } from '@angular/core';
-import { Section } from "./classes/Section";
-import { soundSections } from "./sounds-database";
-import { Sound } from "./classes/Sound";
-import { Hotkey } from "./classes/Hotkey";
+import { Section } from './classes/Section';
+import { soundSections } from './sounds-database';
+import { Sound } from './classes/Sound';
+import { Hotkey } from './classes/Hotkey';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SoundsLibraryService {
 
-  private _soundSections: Section[] = [];
+  readonly soundSections: Section[] = soundSections;
 
-  get soundSections() {
-    if (this._soundSections.length === 0) this._soundSections = soundSections;
-
-    return this._soundSections;
-  }
+  private readonly allSounds: Sound[] = this.soundSections.flatMap(section => section.getSounds());
 
   getSoundByHotkey(hotkey: Hotkey): Sound | undefined {
-    return this.allSounds.find(x => x.isSameHotkey(hotkey));
+    if (!hotkey.key) return undefined;
+
+    return this.allSounds.find(sound => sound.isSameHotkey(hotkey));
   }
 
   searchSoundsByText(searchText: string): Section {
-    const sounds = this.getSoundsThatContainsText(searchText);
+    const normalizedText = this.normalize(searchText);
+    const sounds = this.allSounds.filter(sound => this.normalize(sound.displayName).includes(normalizedText));
 
-    return new Section(`Resultados`, "", sounds);
+    return new Section('Resultados', '', sounds);
   }
 
-  private getSoundsThatContainsText(searchText: string) {
-    let containsSearchText = (x: Sound) => this.normalize(x.displayName).includes(this.normalize(searchText));
-    const filteredSounds = this.allSounds.filter(containsSearchText);
-    return filteredSounds;
-  }
-
-  private get allSounds(): Sound[] {
-    return this.soundSections.flatMap(x => x.getSounds());
-  }
-
-  private normalize(str: string): string {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  /** Lower case and without accents, so "invente" finds "Invente Román!". */
+  private normalize(text: string): string {
+    return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   }
 
 }

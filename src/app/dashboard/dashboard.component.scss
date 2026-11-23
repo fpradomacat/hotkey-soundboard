@@ -1,16 +1,12 @@
-@import "src/styles";
+@use 'mixins';
 
 .dashboard {
 
   display: flex;
   flex-direction: column;
 
-  app-header {
-    margin-bottom: 1rem;
-  }
-
   input {
-    @extend .clickable-box;
+    @include mixins.clickable-box;
 
     padding: 1rem;
     border-radius: 3px;
@@ -20,7 +16,6 @@
     box-shadow: inset -4px -4px 0px 0px var(--header--box-shadow-color);
     font-family: 'Press Start 2P', cursive;
     margin: 1rem 0;
-
 
     &:hover,
     &:focus {

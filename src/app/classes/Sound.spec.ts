@@ -16,4 +16,20 @@ describe('Sound', () => {
     expect(sound.isSameHotkey({key: 'a', isCtrlPressed: false})).toBeFalse();
     expect(sound.isSameHotkey({key: 'a', isCtrlPressed: true})).toBeTrue();
   });
+
+  it('describes its hotkey for display and for assistive technology', () => {
+    const plain = new Sound('a', 'A', 'q');
+    const withCtrl = new Sound('b', 'B', 'a', true);
+
+    expect(plain.hotkeyToString).toBe('Q');
+    expect(plain.ariaKeyShortcuts).toBe('Q');
+    expect(withCtrl.hotkeyToString).toBe('CTRL + A');
+    expect(withCtrl.ariaKeyShortcuts).toBe('Control+A');
+  });
+
+  it('reports no hotkey when it was not given one', () => {
+    const sound = new Sound('va-el-tercero_loop', 'Y va el tercero!');
+    expect(sound.hasHotkey).toBeFalse();
+    expect(sound.ariaKeyShortcuts).toBeNull();
+  });
 });

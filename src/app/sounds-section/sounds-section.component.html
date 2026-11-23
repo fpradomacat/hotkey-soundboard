@@ -1,18 +1,14 @@
-<div class="sounds-section">
+<section class="sounds-section" [attr.aria-label]="section().getName()">
   <div class="section-header">
-    <h3>{{this.section.getName()}}</h3>
+    <h2>{{ section().getName() }}</h2>
   </div>
   <div class="sounds-container">
-    @for (sound of this.section.getSounds(); track sound) {
-      <app-sound-card
-      [sound]="sound"></app-sound-card>
+    @for (sound of section().getSounds(); track sound.source) {
+      <app-sound-card [sound]="sound" />
     }
   </div>
 
-  @if (this.section.getSounds().length === 0) {
-    <span
-      class="no-data-label">
-      No hay sonidos :(
-    </span>
+  @if (section().getSounds().length === 0) {
+    <span class="no-data-label" role="status">No hay sonidos :(</span>
   }
-</div>
+</section>

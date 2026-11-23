@@ -1,29 +1,27 @@
 <div class="dashboard">
 
-  <!--  <app-header></app-header>-->
+  <h1 class="sr-only">Botonera de sonidos</h1>
 
-  <app-stop-button></app-stop-button>
+  <app-stop-button />
 
-  <input #searchInput
-    [ngModel]="searchText"
-    (ngModelChange)="onSearchTextChange($event)"
-    (focus)="isInputTextFocused = true"
-    (blur)="isInputTextFocused = false"
-    name="filter"
-    placeholder="Buscar..."
-    type="text"
-    autocomplete="off"
-    maxlength="20"
-    >
+  <input type="text"
+         name="filter"
+         placeholder="Buscar..."
+         aria-label="Buscar sonidos"
+         autocomplete="off"
+         maxlength="20"
+         [value]="searchText()"
+         (input)="onSearchInput($event)"
+  >
 
-    @if (searchResults) {
-      <app-sounds-section [section]="searchResults"></app-sounds-section>
-    } @else {
-      @for (section of this.soundsLibraryService.soundSections; track section) {
-        <app-sounds-section
-        [section]="section"></app-sounds-section>
-      }
+  <p class="sr-only" aria-live="polite">{{ currentSound() ? 'Reproduciendo ' + currentSound()?.displayName : '' }}</p>
+
+  @if (searchResults(); as results) {
+    <app-sounds-section [section]="results" />
+  } @else {
+    @for (section of soundsLibraryService.soundSections; track section.getName()) {
+      <app-sounds-section [section]="section" />
     }
+  }
 
-
-  </div>
+</div>

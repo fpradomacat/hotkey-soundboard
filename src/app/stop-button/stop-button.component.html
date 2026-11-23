@@ -1,7 +1,9 @@
-<button (click)="stopCurrentSound()"
-        type="button"
+<button type="button"
         class="stop-button"
-        [class.stop-button-active]="isStopButtonActive"
+        aria-label="Frenar sonido"
+        aria-keyshortcuts="Shift"
+        [class.stop-button-active]="isStopButtonActive()"
+        (click)="stopCurrentSound()"
 >
-  <span>STOP</span>
+  <span aria-hidden="true">STOP</span>
 </button>

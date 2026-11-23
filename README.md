@@ -1,35 +1,90 @@
-# SoundEffectsLibrary
+# Hotkey Soundboard
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.6.
+A keyboard-driven soundboard that runs in the browser. Press a key, hear a clip. Built with Angular.
 
-## Deploy to Github Pages
+**Live demo:** https://fpradomacat.github.io/hotkey-soundboard/
 
-Run `npm run deploy` (or `ng build --output-path docs --base-href /sound-effects-library/`).
-Create a copy of `index.html` and rename it to `404.html`. 
+![Hotkey Soundboard with the first clip playing](screenshots/hotkey-soundboard.png)
 
+The clips are short Spanish-language (Argentine) catchphrases and football commentary, grouped by keyboard row. The UI is in Spanish.
 
-Commit, push and changes will be automatically displayed.
+## Features
 
-## Development server
+- **One key per clip.** Each card shows its hotkey. Some use `Ctrl` as a modifier.
+- **Stop with Shift.** A single shared player: a new clip always cuts the previous one. `Shift` (or the STOP button) silences it.
+- **Instant search.** Case- and accent-insensitive: `roman` finds "Invente Román!".
+- **Shows what is playing.** The active card is highlighted and announced to screen readers.
+- **Accessible.** Real `<button>` elements, visible keyboard focus, `aria-keyshortcuts`, labelled search box.
+- **Safe with browser shortcuts.** Key repeat, Caps Lock and Alt/Meta combinations are handled; `Ctrl+A` plays its clip without selecting the page.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Keyboard shortcuts
 
-## Code scaffolding
+| Key | Action |
+| --- | --- |
+| Letter / digit shown on a card | Play that clip |
+| `Shift` | Stop the current clip |
+| Typing in the search box | Disables clip hotkeys until the box is empty |
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Tech stack
 
-## Build
+- Angular 22: standalone components, signals, zoneless change detection, `@if` / `@for` control flow
+- TypeScript (strict), SCSS, esbuild builder
+- Karma + Jasmine unit tests, ESLint with `angular-eslint` (including template accessibility rules)
+- GitHub Actions: checks on pull requests, deploy to GitHub Pages
+- No backend. The font (Press Start 2P, SIL OFL) is self-hosted, so the app makes no third-party requests.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Getting started
 
-## Running unit tests
+You need Node.js 22.22.3 or newer (or 24.15+), and Chrome for the tests.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+npm ci
+npm start          # http://localhost:4200
+```
 
-## Running end-to-end tests
+| Command | What it does |
+| --- | --- |
+| `npm start` | Dev server with live reload |
+| `npm run build` | Production build into `dist/` |
+| `npm test` | Unit tests in watch mode |
+| `npm run test:ci` | Unit tests once, headless |
+| `npm run lint` | ESLint, including accessibility checks for templates |
+| `npm run validate:sounds` | Checks `sounds.json` against the audio files |
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Adding a clip
 
-## Further help
+1. Put the file in `src/assets/audio/`, for example `my_clip.mp3`.
+2. Add an entry to a section in `src/app/sounds.json`:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+   ```json
+   { "file": "my_clip", "name": "My clip", "hotkey": "x" }
+   ```
+
+   Use `"ctrl": true` if the hotkey needs Ctrl. Leave out `hotkey` for a clip without one.
+3. Run `npm run validate:sounds`. It fails on a missing file, an unused file, or a repeated hotkey.
+
+## Project structure
+
+```
+src/app/
+  sounds.json                  all clips: sections, names, hotkeys
+  sounds-database.ts           turns sounds.json into Section / Sound objects
+  sounds-library.service.ts    hotkey lookup and search
+  sound-player.service.ts      the shared audio element, exposes the current sound as a signal
+  dashboard/                   page: search, global keyboard handler
+  sounds-section/ sound-card/ stop-button/
+scripts/validate-sounds.mjs    data check, also run in CI
+.github/workflows/             ci.yml (pull requests) and deploy.yml (GitHub Pages)
+```
+
+## Deployment
+
+Every push to `master` builds the app and publishes it with GitHub Pages. In the repository settings, Pages must use **GitHub Actions** as its source. The workflow reads the repository name for the `--base-href`, so the project can be renamed without changing it.
+
+## Audio
+
+The MIT license covers the source code only. The audio clips are recordings of people and broadcast commentary that are not covered by it and may belong to their respective owners.
+
+## License
+
+[MIT](LICENSE), for the code.
