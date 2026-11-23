@@ -1,0 +1,35 @@
+@use 'mixins';
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  @include mixins.clickable-box;
+
+  display: block;
+  position: relative;
+  padding: 1rem;
+  border-radius: 3px;
+  background-color: var(--header--background-color);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.75rem;
+  box-shadow: inset -4px -4px 0 0 var(--header--box-shadow-color);
+
+  &:hover,
+  &.active {
+    background: #00b8e6;
+    box-shadow: inset 3px 3px 0 0 var(--header--box-shadow-color-active);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 8px;
+  }
+}

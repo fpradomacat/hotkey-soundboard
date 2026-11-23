@@ -1,0 +1,103 @@
+{
+  "title": "Amigos",
+  "description": "Frases de amigos y compañeros",
+  "sections": [
+    {
+      "name": "ESolutions",
+      "description": "Fila letra \"A\"",
+      "sounds": [
+        {
+          "file": "marteeen",
+          "name": "Marteeen",
+          "hotkey": "a"
+        },
+        {
+          "file": "invente",
+          "name": "Invente!",
+          "hotkey": "s"
+        },
+        {
+          "file": "inventeRoman",
+          "name": "Invente Román!",
+          "hotkey": "d"
+        },
+        {
+          "file": "yvo_casocerrado",
+          "name": "Caso cerrado 1!",
+          "hotkey": "f"
+        },
+        {
+          "file": "yvo_casocerrado1",
+          "name": "Caso cerrado 2!",
+          "hotkey": "g"
+        },
+        {
+          "file": "yvo_hedicho",
+          "name": "He dicho!",
+          "hotkey": "h"
+        },
+        {
+          "file": "votamos",
+          "name": "Votamos?",
+          "hotkey": "j"
+        },
+        {
+          "file": "adam_nadama",
+          "name": "Nadamá",
+          "hotkey": "k"
+        },
+        {
+          "file": "adam_chau",
+          "name": "Chauchiques",
+          "hotkey": "l"
+        }
+      ]
+    },
+    {
+      "name": "Biancho",
+      "description": "Fila letra \"Z\"",
+      "sounds": [
+        {
+          "file": "agu_anoder_birdei",
+          "name": "Anoder Birdei",
+          "hotkey": "z"
+        },
+        {
+          "file": "agu_friendcito",
+          "name": "Friendcito1",
+          "hotkey": "x"
+        },
+        {
+          "file": "agu_friendcito1",
+          "name": "Friendcito2",
+          "hotkey": "c"
+        },
+        {
+          "file": "agu_ay_agustin",
+          "name": "Ayyy Agustin",
+          "hotkey": "v"
+        },
+        {
+          "file": "agu_vida_de_mier",
+          "name": "Vida de mier",
+          "hotkey": "b"
+        },
+        {
+          "file": "agu_que_ganas",
+          "name": "Qué ganas ..",
+          "hotkey": "n"
+        },
+        {
+          "file": "agu_esta_rompido",
+          "name": "Está rompido",
+          "hotkey": "m"
+        },
+        {
+          "file": "agu_boludo",
+          "name": "Boludo",
+          "hotkey": ","
+        }
+      ]
+    }
+  ]
+}

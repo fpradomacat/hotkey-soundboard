@@ -28,7 +28,7 @@ npm run build             # production build into dist/sound-effects-library/bro
 npm test                  # Karma, watch mode, opens Chrome
 npm run test:ci           # Karma once, headless (ChromeHeadlessCI launcher, no sandbox)
 npm run lint              # ESLint, includes template accessibility rules
-npm run validate:sounds   # checks src/app/sounds.json against src/assets/audio
+npm run validate:sounds   # checks every pack in src/assets/packs (pack.json vs mp3 files, hotkeys)
 ```
 
 Before saying a change is done, run `npm run validate:sounds && npm run lint && npm run test:ci && npm run build`. CI runs exactly that on every pull request.
@@ -38,14 +38,17 @@ Before saying a change is done, run `npm run validate:sounds && npm run lint && 
 ```
 src/main.ts                       bootstrapApplication(AppComponent, appConfig)
 src/app/
-  app.config.ts / app.routes.ts   zoneless + router. '' redirects to /dashboard; the only route is /dashboard
-  sounds.json                     THE DATA: sections -> sounds (file, name, hotkey, ctrl)
-  sounds-database.ts              SoundsFile types + buildSections(): JSON -> Section[] / Sound[]
+  app.config.ts / app.routes.ts   zoneless + router with input binding. Route `p/:packId` (resolver loads the pack); anything else redirects to `p/classic`
+  packs/
+    pack.ts                       PackFile types + buildPack(id, json, baseUrl)
+    pack.service.ts               fetches index.json / pack.json at runtime, caches packs; DEFAULT_PACK_ID
+    pack.resolver.ts              route resolver; unknown pack -> redirect to the default
+  pack-selector/              links to every pack (hidden when there is only one)
   classes/
     Sound.ts      file id, display name, hotkey; asset path; isSameHotkey(); aria shortcut text
     Section.ts    name, description, sounds (getters)
     Hotkey.ts     { key: string; isCtrlPressed: boolean }
-  sounds-library.service.ts   hotkey lookup + accent-insensitive search
+  sounds-library.service.ts   holds the open pack (setPack); hotkey lookup + accent-insensitive search
   sound-player.ts             abstract SoundPlayer
   sound-player.service.ts     ONE shared HTMLAudioElement; exposes currentSound as a signal
   dashboard/                  page: <h1>, search box, global keydown handler, live region, sections
@@ -53,14 +56,14 @@ src/app/
   sound-card/                 one clip: <button>, name, hotkey badge, "playing" highlight
   stop-button/                fixed button on the left edge; looks pressed while Shift is held
 src/styles/_mixins.scss       clickable-box mixin (pixel border), used with @use 'mixins'
-src/assets/audio/*.mp3        the clips
+src/assets/packs/            index.json (pack ids) + <id>/pack.json + <id>/*.mp3 (THE DATA)
 src/fonts/                    Press Start 2P (woff2) + its license
 scripts/validate-sounds.mjs   data check (missing mp3, unused mp3, repeated hotkey, bad fields)
 ```
 
 ### Data flow
 
-1. `sounds.json` -> `buildSections()` -> `soundSections`. `SoundsLibraryService` exposes them and flattens them for lookups.
+1. The route resolver loads `assets/packs/<id>/pack.json` with `PackService` and `buildPack()`; the dashboard gets it as the `pack` input and calls `SoundsLibraryService.setPack()` (also stops the sound and clears the search).
 2. `DashboardComponent` listens to `window:keydown` (via `host`). It ignores keys while the search box has text or focus. **Shift = stop**. Otherwise it ignores key repeat and Alt/Meta, lower-cases `event.key` (Caps Lock), and calls `playSoundByHotkey`; `preventDefault()` only if a clip was played.
 3. `SoundPlayerService.playSound()` sets `audio.src`, calls `load()` then `play()`. Playing a clip always cuts the previous one (intended). `currentSound` is cleared on `ended`, `pause` and `error`.
 4. `SoundCardComponent` highlights itself when `currentSound()` is its sound. The dashboard announces "Reproduciendo X" in an `aria-live` region.
@@ -68,16 +71,20 @@ scripts/validate-sounds.mjs   data check (missing mp3, unused mp3, repeated hotk
 
 ### Adding a clip
 
-1. Put `my_clip.mp3` in `src/assets/audio/` (snake_case or kebab-case, no spaces; clips are small, 10-50 KB).
-2. Add `{ "file": "my_clip", "name": "Display name", "hotkey": "x" }` to a section in `src/app/sounds.json`. `"ctrl": true` makes Ctrl required; omit `hotkey` for no hotkey.
-3. `npm run validate:sounds` must pass. Hotkeys are unique per (key, ctrl) pair.
+1. Put `my_clip.mp3` in `src/assets/packs/<id>/` (snake_case or kebab-case, no spaces; clips are small, 10-50 KB).
+2. Add `{ "file": "my_clip", "name": "Display name", "hotkey": "x" }` to a section in that pack's `pack.json`. `"ctrl": true` makes Ctrl required; omit `hotkey` for no hotkey.
+3. `npm run validate:sounds` must pass. Hotkeys are unique per (key, ctrl) pair, per pack.
+
+### Adding a pack
+
+New folder in `src/assets/packs/` with `pack.json` + mp3s, and its id in `index.json`. No code change. Pack ids: lower case letters, digits, `-` (PackService rejects anything else). Not done yet, but the format allows it: loading a pack from a URL (`?pack=`) or importing a local folder (IndexedDB) for private packs.
 
 ## Deployment
 
 `.github/workflows/deploy.yml` builds on every push to `master` and publishes with the official Pages actions (repo Settings -> Pages -> Source = "GitHub Actions"). The `--base-href` comes from the repository name, so renaming the repo needs no change. The application builder writes the site to `dist/site/browser`; the workflow copies `index.html` to `404.html` (SPA fallback) there.
 `.github/workflows/ci.yml` runs validate + lint + tests + build on pull requests.
 
-Audio URLs are relative (`assets/audio/x.mp3`) and resolve against `<base href>`, so the app works at `/` in dev and at `/<repo>/` on Pages.
+Audio URLs are relative (`assets/packs/<id>/x.mp3`) and resolve against `<base href>`, so the app works at `/` in dev and at `/<repo>/` on Pages.
 
 ## Conventions
 

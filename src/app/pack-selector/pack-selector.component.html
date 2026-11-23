@@ -1,0 +1,16 @@
+@if (packs.value(); as list) {
+  @if (list.length > 1) {
+    <nav aria-label="Packs de sonidos">
+      <ul>
+        @for (pack of list; track pack.id) {
+          <li>
+            <a [routerLink]="['/p', pack.id]"
+               routerLinkActive="active"
+               ariaCurrentWhenActive="page"
+               [title]="pack.description">{{ pack.title }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
+}

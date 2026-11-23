@@ -49,12 +49,18 @@ npm start          # http://localhost:4200
 | `npm test` | Unit tests in watch mode |
 | `npm run test:ci` | Unit tests once, headless |
 | `npm run lint` | ESLint, including accessibility checks for templates |
-| `npm run validate:sounds` | Checks `sounds.json` against the audio files |
+| `npm run validate:sounds` | Checks every pack (`pack.json`, mp3 files, hotkeys) |
+
+## Packs
+
+A pack is a folder in `src/assets/packs/<id>/` with a `pack.json` and its mp3 files. Each pack has its own URL (`/p/<id>`) and its own hotkeys, and the page shows a selector when there is more than one. The packs on the site are listed in `src/assets/packs/index.json`.
+
+To make a new pack: create the folder, add `pack.json` (copy an existing one) and the mp3 files, then add the id to `index.json`. The code is the same for every pack, so there is nothing to fork.
 
 ## Adding a clip
 
-1. Put the file in `src/assets/audio/`, for example `my_clip.mp3`.
-2. Add an entry to a section in `src/app/sounds.json`:
+1. Put the file in the pack folder, for example `src/assets/packs/classic/my_clip.mp3`.
+2. Add an entry to a section in that pack's `pack.json`:
 
    ```json
    { "file": "my_clip", "name": "My clip", "hotkey": "x" }
@@ -67,12 +73,13 @@ npm start          # http://localhost:4200
 
 ```
 src/app/
-  sounds.json                  all clips: sections, names, hotkeys
-  sounds-database.ts           turns sounds.json into Section / Sound objects
-  sounds-library.service.ts    hotkey lookup and search
+  packs/                       pack types, loader (PackService) and the route resolver
+  sounds-library.service.ts    sounds of the open pack: hotkey lookup and search
+  pack-selector/               links between packs
   sound-player.service.ts      the shared audio element, exposes the current sound as a signal
   dashboard/                   page: search, global keyboard handler
   sounds-section/ sound-card/ stop-button/
+src/assets/packs/            index.json + one folder per pack (pack.json and mp3 files)
 scripts/validate-sounds.mjs    data check, also run in CI
 .github/workflows/             ci.yml (pull requests) and deploy.yml (GitHub Pages)
 ```

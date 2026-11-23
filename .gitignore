@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Clips kept out of the public repo (private packs)
+/private-packs/

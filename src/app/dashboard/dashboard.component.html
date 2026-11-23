@@ -1,6 +1,8 @@
 <div class="dashboard">
 
-  <h1 class="sr-only">Botonera de sonidos</h1>
+  <h1 class="sr-only">Botonera de sonidos: {{ pack().title }}</h1>
+
+  <app-pack-selector />
 
   <app-stop-button />
 
@@ -19,7 +21,7 @@
   @if (searchResults(); as results) {
     <app-sounds-section [section]="results" />
   } @else {
-    @for (section of soundsLibraryService.soundSections; track section.getName()) {
+    @for (section of soundsLibraryService.soundSections(); track section.getName()) {
       <app-sounds-section [section]="section" />
     }
   }

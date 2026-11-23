@@ -1,13 +1,18 @@
 import { Sound } from './Sound';
 
 describe('Sound', () => {
+  it('builds its source from the base URL it is given', () => {
+    const sound = new Sound('alpha', 'Alpha', 'q', false, 'assets/packs/test/');
+    expect(sound.source).toBe('assets/packs/test/alpha.mp3');
+  });
+
   it('builds a relative asset path so it works under any <base href>', () => {
-    const sound = new Sound('gemido', 'Gemido', 'q');
-    expect(sound.source).toBe('assets/audio/gemido.mp3');
+    const sound = new Sound('alpha', 'Alpha', 'q');
+    expect(sound.source).toBe('assets/audio/alpha.mp3');
   });
 
   it('stores the hotkey in lower case so Caps Lock does not break it', () => {
-    const sound = new Sound('gemido', 'Gemido', 'Q');
+    const sound = new Sound('alpha', 'Alpha', 'Q');
     expect(sound.isSameHotkey({key: 'q', isCtrlPressed: false})).toBeTrue();
   });
 

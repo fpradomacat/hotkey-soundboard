@@ -2,17 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { SoundPlayerService } from './sound-player.service';
 import { SoundsLibraryService } from './sounds-library.service';
 import { Sound } from './classes/Sound';
+import { testPack } from './testing/test-pack';
 
 describe('SoundPlayerService', () => {
   let service: SoundPlayerService;
   let playSpy: jasmine.Spy;
   let pauseSpy: jasmine.Spy;
-  const sound = new Sound('gemido', 'Gemido', 'q');
+  const sound = new Sound('alpha', 'Alpha', 'q');
 
   beforeEach(() => {
     playSpy = spyOn(HTMLMediaElement.prototype, 'play').and.resolveTo();
     pauseSpy = spyOn(HTMLMediaElement.prototype, 'pause');
     spyOn(HTMLMediaElement.prototype, 'load');
+    TestBed.inject(SoundsLibraryService).setPack(testPack);
     service = TestBed.inject(SoundPlayerService);
   });
 
@@ -35,7 +37,7 @@ describe('SoundPlayerService', () => {
     const wasPlayed = service.playSoundByHotkey({key: 'q', isCtrlPressed: false});
 
     expect(wasPlayed).toBeTrue();
-    expect(service.currentSound()?.displayName).toBe('Gemido');
+    expect(service.currentSound()?.displayName).toBe('Alpha');
   });
 
   it('does nothing and says so when no sound has that hotkey', () => {
@@ -73,7 +75,7 @@ describe('SoundPlayerService', () => {
     service.playSound(sound);
 
     const audio = (service as unknown as { audio: HTMLAudioElement }).audio;
-    expect(audio.src).toBe(new URL('assets/audio/gemido.mp3', document.baseURI).href);
+    expect(audio.src).toBe(new URL('assets/audio/alpha.mp3', document.baseURI).href);
   });
 
   it('is injected with the library service', () => {

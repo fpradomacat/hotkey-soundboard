@@ -1,0 +1,48 @@
+{
+  "title": "Clásicos",
+  "description": "Los clásicos de siempre",
+  "sections": [
+    {
+      "name": "Clásicos",
+      "description": "Fila letra \"Q\"",
+      "sounds": [
+        {
+          "file": "choro_loreventas",
+          "name": "Lo reventas",
+          "hotkey": "w"
+        },
+        {
+          "file": "choro_zapateas",
+          "name": "Lo zapateas",
+          "hotkey": "e"
+        },
+        {
+          "file": "choro_granflauta",
+          "name": "Gran flauta",
+          "hotkey": "r"
+        },
+        {
+          "file": "choro_inimputable",
+          "name": "Inimputable",
+          "hotkey": "t"
+        },
+        {
+          "file": "cocosily",
+          "name": "Iiihhh",
+          "hotkey": "i"
+        },
+        {
+          "file": "ysihijo",
+          "name": "Y si hijo!",
+          "hotkey": "p"
+        },
+        {
+          "file": "el-taco-no_ampli",
+          "name": "El taco no!",
+          "hotkey": "a",
+          "ctrl": true
+        }
+      ]
+    }
+  ]
+}

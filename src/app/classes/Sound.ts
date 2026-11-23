@@ -5,11 +5,14 @@ export class Sound {
   private readonly _source: string;
   private readonly _displayName: string;
   private readonly _hotkey: Hotkey;
+  private readonly _baseUrl: string;
 
   constructor(_source: string,
               _displayName: string,
               _key = '',
-              _isCtrlPressed = false) {
+              _isCtrlPressed = false,
+              _baseUrl = 'assets/audio/') {
+    this._baseUrl = _baseUrl;
     this._source = _source;
     this._displayName = _displayName;
     this._hotkey = {key: _key.toLowerCase(), isCtrlPressed: _isCtrlPressed};
@@ -20,9 +23,9 @@ export class Sound {
   }
 
   get source() {
-    // Relative on purpose: the browser resolves it against <base href>,
+    // The base URL is relative on purpose: the browser resolves it against <base href>,
     // so it works in dev ('/') and on GitHub Pages ('/<repo-name>/').
-    return `assets/audio/${this._source}.mp3`;
+    return `${this._baseUrl}${this._source}.mp3`;
   }
 
   get hotkeyToString() {

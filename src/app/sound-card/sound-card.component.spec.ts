@@ -6,7 +6,7 @@ import { Sound } from '../classes/Sound';
 describe('SoundCardComponent', () => {
   let fixture: ComponentFixture<SoundCardComponent>;
   let player: SoundPlayerService;
-  const sound = new Sound('gemido', 'Gemido', 'q');
+  const sound = new Sound('alpha', 'Alpha', 'q');
 
   function setup(value: Sound) {
     spyOn(HTMLMediaElement.prototype, 'play').and.resolveTo();
@@ -23,9 +23,9 @@ describe('SoundCardComponent', () => {
     setup(sound);
     await fixture.whenStable();
 
-    expect(button().getAttribute('aria-label')).toBe('Reproducir Gemido');
+    expect(button().getAttribute('aria-label')).toBe('Reproducir Alpha');
     expect(button().getAttribute('aria-keyshortcuts')).toBe('Q');
-    expect(fixture.nativeElement.textContent).toContain('Gemido');
+    expect(fixture.nativeElement.textContent).toContain('Alpha');
   });
 
   it('plays its sound when the button is clicked', async () => {
