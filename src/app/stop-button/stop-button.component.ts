@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core'
 import { SoundPlayerService } from "../sound-player.service";
 
 @Component({
-  selector: 'app-stop-button',
-  templateUrl: './stop-button.component.html',
-  styleUrls: ['./stop-button.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-stop-button',
+    templateUrl: './stop-button.component.html',
+    styleUrls: ['./stop-button.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StopButtonComponent {
 

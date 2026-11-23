@@ -1,13 +1,15 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { SoundPlayerService } from "../sound-player.service";
 import { SoundsLibraryService } from "../sounds-library.service";
 import { Hotkey } from "../classes/Hotkey";
 import { Section } from "../classes/Section";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class DashboardComponent {
   searchText: string = "";

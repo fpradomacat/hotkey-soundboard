@@ -5,24 +5,25 @@
   <app-stop-button></app-stop-button>
 
   <input #searchInput
-         [ngModel]="searchText"
-         (ngModelChange)="onSearchTextChange($event)"
-         (focus)="isInputTextFocused = true"
-         (blur)="isInputTextFocused = false"
-         name="filter"
-         placeholder="Buscar..."
-         type="text"
-         autocomplete="off"
-         maxlength="20"
-  >
+    [ngModel]="searchText"
+    (ngModelChange)="onSearchTextChange($event)"
+    (focus)="isInputTextFocused = true"
+    (blur)="isInputTextFocused = false"
+    name="filter"
+    placeholder="Buscar..."
+    type="text"
+    autocomplete="off"
+    maxlength="20"
+    >
 
-  <ng-container *ngIf="searchResults; else allSections">
-    <app-sounds-section [section]="searchResults"></app-sounds-section>
-  </ng-container>
+    @if (searchResults) {
+      <app-sounds-section [section]="searchResults"></app-sounds-section>
+    } @else {
+      @for (section of this.soundsLibraryService.soundSections; track section) {
+        <app-sounds-section
+        [section]="section"></app-sounds-section>
+      }
+    }
 
-  <ng-template #allSections>
-    <app-sounds-section *ngFor="let section of this.soundsLibraryService.soundSections"
-                        [section]="section"></app-sounds-section>
-  </ng-template>
 
-</div>
+  </div>

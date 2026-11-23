@@ -3,12 +3,16 @@
     <h3>{{this.section.getName()}}</h3>
   </div>
   <div class="sounds-container">
-    <app-sound-card *ngFor="let sound of this.section.getSounds()"
-                    [sound]="sound"></app-sound-card>
+    @for (sound of this.section.getSounds(); track sound) {
+      <app-sound-card
+      [sound]="sound"></app-sound-card>
+    }
   </div>
 
-  <span *ngIf="this.section.getSounds().length === 0"
-        class="no-data-label">
-    No hay sonidos :(
-  </span>
+  @if (this.section.getSounds().length === 0) {
+    <span
+      class="no-data-label">
+      No hay sonidos :(
+    </span>
+  }
 </div>

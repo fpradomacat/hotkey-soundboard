@@ -14,9 +14,9 @@ A browser soundboard ("botonera") of short Spanish-language (Argentine) audio cl
 
 ## Stack
 
-- Angular 13.3 (NgModule-based, no standalone components), TypeScript 4.6 strict, RxJS 7.5, SCSS.
+- Angular 22 (upgraded from 13 in phase 2), NgModule-based: components are declared in `AppModule` with `standalone: false`. TypeScript 6 strict, RxJS 7, SCSS. Builder is still `@angular-devkit/build-angular:browser` (webpack).
 - Tests: Karma + Jasmine (`*.spec.ts` files are mostly the CLI-generated stubs; there is no meaningful coverage yet).
-- Node: use **16.x** (Angular 13 officially supports 12.20 / 14.15 / 16.10). Newer Node may print engine warnings or fail.
+- Node: **22.22.3 or newer** (or 24.15+). Angular 22 refuses to run on older Node. CI uses Node 22.
 - No UI library. Retro/pixel look done by hand (font "Press Start 2P" from Google Fonts, `.clickable-box` mixin in `src/styles.scss`).
 
 ## Commands
@@ -26,7 +26,7 @@ npm ci                 # install (use the lockfile)
 npm start              # ng serve -> http://localhost:4200
 npm run build          # production build into dist/sound-effects-library
 npm test               # Karma (needs Chrome). Headless: run with a karma config using ChromeHeadless --no-sandbox
-npm run deploy         # LEGACY manual deploy: builds into docs/ with base-href /sound-effects-library/
+npm run deploy         # LEGACY (still works, but Pages is deployed by GitHub Actions) manual deploy: builds into docs/ with base-href /sound-effects-library/
 ```
 
 ## Architecture
@@ -88,12 +88,15 @@ Phase 2 (bug fixing) status. "Fixed" items were verified with a production build
 **Known limitations (not bugs to fix now)**
 - `Ctrl+1` cannot be intercepted: browsers reserve it for tab switching, and Chrome ignores `preventDefault()` for it.
 - Shift always means "stop", so shifted keys can never be hotkeys.
-- Component style budget warnings exist since before phase 2: `dashboard.component.scss` (2.09 kB) and `header.component.scss` (2.01 kB) exceed the 2 kB warning limit.
+- Angular's `ng update` migrations changed a few files in phase 2: `ChangeDetectionStrategy.Eager` was added explicitly to components (Angular 22 changed the default), templates now use `@if` / `@for` block syntax instead of `*ngIf` / `*ngFor`. Use the new syntax in new code.
+- Build warnings that remain: component style budget (`dashboard.component.scss` ~2.13 kB and `header.component.scss` ~2.06 kB vs 2 kB) and Sass deprecation warnings for `@import "src/styles"` in three component SCSS files (move to `@use` in phase 4).
+
+**Done in phase 2: Angular 13 -> 22**, one major at a time. Verified with a production build, the unit tests and a headless-Chrome smoke test that the page renders all 28 cards under a `/<repo>/` base href. Not tested by hand in a real browser.
 
 **Backlog for phase 3 (improvements)**
 - PLAY control is a `div` with `(click)`, not a `<button>`; no keyboard focus or aria. Hotkeys are useless on touch devices.
 - Dead code: unused `HeaderComponent`, unused `col-*` grid CSS in `styles.scss`, `//todo rename to SoundsSection` in `Section.ts`, README is still the Angular CLI boilerplate.
-- Angular 13 is out of support; the upgrade is planned.
+- Optional Angular migrations not applied yet: new application builder (esbuild, `ng update @angular/cli --name use-application-builder`) and Karma -> Vitest (`--name migrate-karma-to-vitest`).
 - Audio rights: several clips are recordings of identifiable people and broadcast commentary. Worth a conscious decision before promoting the repo publicly.
 
 ## Conventions

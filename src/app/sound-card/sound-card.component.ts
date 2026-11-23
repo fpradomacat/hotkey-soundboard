@@ -1,11 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Sound } from "../classes/Sound";
 import { SoundPlayerService } from "../sound-player.service";
 
 @Component({
-  selector: 'app-sound-card',
-  templateUrl: './sound-card.component.html',
-  styleUrls: ['./sound-card.component.scss']
+    selector: 'app-sound-card',
+    templateUrl: './sound-card.component.html',
+    styleUrls: ['./sound-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class SoundCardComponent {
 
